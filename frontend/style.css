@@ -111,6 +111,30 @@ header h1 {
     margin-bottom: 0;
 }
 
+.new-chat-btn {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem 0;
+    border: none;
+    background: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    width: 100%;
+    text-align: left;
+    transition: color 0.2s ease;
+}
+
+.new-chat-btn:hover {
+    color: var(--primary-color);
+}
+
+.new-chat-btn:focus {
+    outline: none;
+    color: var(--primary-color);
+}
+
 /* Main Chat Area */
 .chat-main {
     flex: 1;
@@ -220,16 +244,19 @@ header h1 {
 
 /* Collapsible Sources */
 .sources-collapsible {
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.5rem;
 }
 
 .sources-collapsible summary {
     cursor: pointer;
     padding: 0.25rem 0.5rem;
     user-select: none;
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--primary-color);
+    letter-spacing: 0.03em;
 }
 
 .sources-collapsible summary:hover {
@@ -237,18 +264,19 @@ header h1 {
 }
 
 .sources-collapsible[open] summary {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.4rem;
 }
 
 .sources-content {
-    padding: 0 0.5rem 0.25rem 1.5rem;
-    color: var(--text-secondary);
     list-style: disc;
-    margin: 0.25rem 0 0.25rem 1rem;
+    margin: 0.25rem 0 0.25rem 1.25rem;
+    padding: 0;
 }
 
 .sources-content li {
-    margin-bottom: 0.2rem;
+    margin-bottom: 0.3rem;
+    color: var(--text-primary);
+    line-height: 1.4;
 }
 
 /* Markdown formatting styles */
