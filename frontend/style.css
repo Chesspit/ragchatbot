@@ -243,6 +243,12 @@ header h1 {
 .sources-content {
     padding: 0 0.5rem 0.25rem 1.5rem;
     color: var(--text-secondary);
+    list-style: disc;
+    margin: 0.25rem 0 0.25rem 1rem;
+}
+
+.sources-content li {
+    margin-bottom: 0.2rem;
 }
 
 /* Markdown formatting styles */
