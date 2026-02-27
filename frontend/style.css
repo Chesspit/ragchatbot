@@ -124,6 +124,11 @@ header h1 {
     width: 100%;
     text-align: left;
     transition: color 0.2s ease;
+    outline: none;
+    box-shadow: none;
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
 }
 
 .new-chat-btn:hover {
@@ -131,7 +136,6 @@ header h1 {
 }
 
 .new-chat-btn:focus {
-    outline: none;
     color: var(--primary-color);
 }
 
