@@ -113,6 +113,71 @@ class CourseSearchTool(Tool):
         
         return "\n\n".join(formatted)
 
+class CourseOutlineTool(Tool):
+    """Tool for retrieving a complete course outline from the course catalog"""
+
+    def __init__(self, vector_store: VectorStore):
+        self.store = vector_store
+
+    def get_tool_definition(self) -> Dict[str, Any]:
+        return {
+            "name": "get_course_outline",
+            "description": "Retrieve the complete structured outline of a course from the catalog: course title, course link, and a full list of every lesson (lesson number + lesson title). Use this — not search_course_content — whenever the user asks for a lesson list, course outline, syllabus, or table of contents.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "course_title": {
+                        "type": "string",
+                        "description": "Course title to look up (partial matches work, e.g. 'MCP', 'Introduction')"
+                    }
+                },
+                "required": ["course_title"]
+            }
+        }
+
+    def execute(self, course_title: str) -> str:
+        import json
+        # Resolve fuzzy course name to exact title stored in catalog
+        resolved_title = self.store._resolve_course_name(course_title)
+        if not resolved_title:
+            return f"No course found matching '{course_title}'"
+
+        # Fetch full metadata entry from the catalog
+        try:
+            results = self.store.course_catalog.get(ids=[resolved_title])
+        except Exception as e:
+            return f"Error retrieving course outline: {e}"
+
+        if not results or not results.get("metadatas") or not results["metadatas"]:
+            return f"No metadata found for course '{resolved_title}'"
+
+        meta = results["metadatas"][0]
+        title = meta.get("title", resolved_title)
+        course_link = meta.get("course_link", "")
+        lessons_json = meta.get("lessons_json", "[]")
+
+        try:
+            lessons = json.loads(lessons_json)
+        except (json.JSONDecodeError, TypeError):
+            lessons = []
+
+        lines = [f"Course: {title}"]
+        if course_link:
+            lines.append(f"Link: {course_link}")
+        lines.append("")
+
+        if lessons:
+            lines.append("Lessons:")
+            for lesson in lessons:
+                num = lesson.get("lesson_number", "?")
+                lesson_title = lesson.get("lesson_title", "Untitled")
+                lines.append(f"  Lesson {num}: {lesson_title}")
+        else:
+            lines.append("No lessons found.")
+
+        return "\n".join(lines)
+
+
 class ToolManager:
     """Manages available tools for the AI"""
     
