@@ -1,5 +1,6 @@
 from typing import List, Tuple, Optional, Dict
 import os
+import anthropic
 from document_processor import DocumentProcessor
 from vector_store import VectorStore
 from ai_generator import AIGenerator
@@ -121,12 +122,17 @@ class RAGSystem:
             history = self.session_manager.get_conversation_history(session_id)
         
         # Generate response using AI with tools
-        response = self.ai_generator.generate_response(
-            query=prompt,
-            conversation_history=history,
-            tools=self.tool_manager.get_tool_definitions(),
-            tool_manager=self.tool_manager
-        )
+        try:
+            response = self.ai_generator.generate_response(
+                query=prompt,
+                conversation_history=history,
+                tools=self.tool_manager.get_tool_definitions(),
+                tool_manager=self.tool_manager
+            )
+        except anthropic.AuthenticationError:
+            return ("AI service unavailable: authentication error. Check the API key.", [])
+        except anthropic.APIError as e:
+            return (f"AI service error: {type(e).__name__}. Please try again.", [])
         
         # Get sources from the search tool
         sources = self.tool_manager.get_last_sources()

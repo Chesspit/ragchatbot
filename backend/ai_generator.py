@@ -81,11 +81,18 @@ Provide only the direct answer to what was asked.
         response = self.client.messages.create(**api_params)
         
         # Handle tool execution if needed
-        if response.stop_reason == "tool_use" and tool_manager:
-            return self._handle_tool_execution(response, api_params, tool_manager)
-        
+        if response.stop_reason == "tool_use":
+            if tool_manager:
+                return self._handle_tool_execution(response, api_params, tool_manager)
+            return "Unable to search: tool manager not configured."
+
         # Return direct response
-        return response.content[0].text
+        if not response.content:
+            return "Received empty response from AI service."
+        first = response.content[0]
+        if not hasattr(first, "text"):
+            return "Received unexpected response format from AI service."
+        return first.text
     
     def _handle_tool_execution(self, initial_response, base_params: Dict[str, Any], tool_manager):
         """
@@ -133,4 +140,6 @@ Provide only the direct answer to what was asked.
         
         # Get final response
         final_response = self.client.messages.create(**final_params)
+        if not final_response.content or not hasattr(final_response.content[0], "text"):
+            return "Received empty final response from AI service."
         return final_response.content[0].text
